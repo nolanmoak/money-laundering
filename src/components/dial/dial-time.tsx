@@ -12,20 +12,23 @@ const DialTime = ({ time, radius }: DialTimeProps) => {
 
   const renderTime = useMemo(() => {
     if (time < 12) {
-      return `${time} AM`;
+      return `${time}AM`;
     }
     if (time === 12) {
-      return `${time} PM`;
+      return `${time}PM`;
     }
     if (time === 24) {
-      return `${time - 12} AM`;
+      return `${time - 12}AM`;
     }
-    return `${time - 12} PM`;
+    return `${time - 12}PM`;
   }, [time]);
 
   return (
     <View className='absolute h-full w-full items-center justify-center'>
-      <Text className='text-muted-foreground font-mono text-sm font-bold' style={styles.dial}>
+      <Text
+        className='text-foreground bg-card shadow-card rounded-md p-0.5 font-mono text-sm font-bold shadow-sm'
+        style={styles.dial}
+      >
         {renderTime}
       </Text>
     </View>
