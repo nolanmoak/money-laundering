@@ -53,9 +53,12 @@ const PEAK_DATA_WINTER = {
     ON: [],
   },
   6: {
-    OFF: [[0, 24]],
-    MID: [],
-    ON: [],
+    OFF: [[19, 7]],
+    MID: [[11, 17]],
+    ON: [
+      [7, 11],
+      [17, 19],
+    ],
   },
 } satisfies PeakData;
 

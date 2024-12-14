@@ -1,6 +1,5 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
-import Svg, { Circle } from 'react-native-svg';
+import Svg, { Circle, Text } from 'react-native-svg';
 import { PeakDataEntry } from '~/data/peak-data';
 
 type DialSegmentsProps = {
@@ -13,7 +12,13 @@ const DialSegments = ({ peakData }: DialSegmentsProps) => {
   const circumference = Math.PI * radius;
   return (
     <>
-      <Svg className='absolute -rotate-90' height='100%' width='100%' viewBox={`0 0 ${viewBoxSize} ${viewBoxSize}`}>
+      <Svg
+        className='absolute -rotate-90'
+        height='100%'
+        width='100%'
+        rotation={-90}
+        viewBox={`0 0 ${viewBoxSize} ${viewBoxSize}`}
+      >
         {peakData.ON.map((onTimes, idx) => {
           const startTime = onTimes[0];
           const endTime = onTimes[1];
@@ -21,12 +26,13 @@ const DialSegments = ({ peakData }: DialSegmentsProps) => {
           return (
             <DialSegment
               key={idx}
+              label='$$$'
+              labelColor='white'
               startTime={startTime}
               endTime={endTime}
               circumference={circumference}
               radius={radius}
-              viewBoxSize={viewBoxSize}
-              strokeColor='tomato'
+              segmentColor='#f2dede'
             />
           );
         })}
@@ -37,12 +43,13 @@ const DialSegments = ({ peakData }: DialSegmentsProps) => {
           return (
             <DialSegment
               key={idx}
+              label='$$'
+              labelColor='white'
               startTime={startTime}
               endTime={endTime}
               circumference={circumference}
               radius={radius}
-              viewBoxSize={viewBoxSize}
-              strokeColor='lightgray'
+              segmentColor='#fcf8e3'
             />
           );
         })}
@@ -53,12 +60,13 @@ const DialSegments = ({ peakData }: DialSegmentsProps) => {
           return (
             <DialSegment
               key={idx}
+              label='$'
+              labelColor='white'
               startTime={startTime}
               endTime={endTime}
               circumference={circumference}
               radius={radius}
-              viewBoxSize={viewBoxSize}
-              strokeColor='lightgreen'
+              segmentColor='#dff0d8'
             />
           );
         })}
@@ -68,36 +76,56 @@ const DialSegments = ({ peakData }: DialSegmentsProps) => {
 };
 
 type DialSegmentProps = {
-  viewBoxSize: number;
+  label: string;
+  labelColor: string;
   radius: number;
   circumference: number;
   startTime: number;
   endTime: number;
-  strokeColor: string;
+  segmentColor: string;
 };
 
-const DialSegment = ({ viewBoxSize, radius, circumference, startTime, endTime, strokeColor }: DialSegmentProps) => {
+const DialSegment = ({
+  label,
+  labelColor,
+  radius,
+  circumference,
+  startTime,
+  endTime,
+  segmentColor,
+}: DialSegmentProps) => {
+  const fontSize = radius / 5;
+
   if (endTime > startTime) {
     // Normal case
     const sectionTimePercentage = (endTime - startTime) / 24;
     const startTimePercentage = startTime / 24;
     const sectionWidth = circumference * sectionTimePercentage;
     const startTimeOffset = -circumference * startTimePercentage;
-    const offset = startTimeOffset;
-
-    console.log(sectionTimePercentage, startTimePercentage, sectionWidth, startTimeOffset);
 
     return (
-      <Circle
-        r={radius / 2}
-        cx={radius}
-        cy={radius}
-        strokeDashoffset={offset}
-        strokeWidth={radius}
-        strokeDasharray={`${sectionWidth} ${circumference}`}
-        fill='transparent'
-        stroke={strokeColor}
-      />
+      <>
+        <Circle
+          r={radius / 2}
+          cx={radius}
+          cy={radius}
+          strokeDashoffset={startTimeOffset}
+          strokeWidth={radius}
+          strokeDasharray={`${sectionWidth} ${circumference}`}
+          fill='transparent'
+          stroke={segmentColor}
+        />
+        <DialSegmentLabel
+          label={label}
+          labelColor={labelColor}
+          fontSize={fontSize}
+          startTime={startTime}
+          endTime={endTime}
+          cx={radius}
+          cy={-radius}
+          r={radius * 0.75}
+        />
+      </>
     );
   } else {
     // Edge case: Range crosses midnight. Render 2 sections
@@ -113,17 +141,6 @@ const DialSegment = ({ viewBoxSize, radius, circumference, startTime, endTime, s
     const firstSectionStartTimeOffset = -circumference * firstSectionStartTimePercentage;
     const secondSectionStartTimeOffset = -circumference * secondSectionStartTimePercentage;
 
-    console.log(
-      firstSectionTimePercentage,
-      secondSectionTimePercentage,
-      firstSectionStartTimePercentage,
-      secondSectionStartTimePercentage,
-      firstSectionWidth,
-      secondSectionWidth,
-      firstSectionStartTimeOffset,
-      secondSectionStartTimeOffset
-    );
-
     return (
       <>
         {/* First segment: from startTime to 24 */}
@@ -135,7 +152,7 @@ const DialSegment = ({ viewBoxSize, radius, circumference, startTime, endTime, s
           strokeWidth={radius}
           strokeDasharray={`${firstSectionWidth} ${circumference}`}
           fill='transparent'
-          stroke={strokeColor}
+          stroke={segmentColor}
         />
         {/* Second segment: from 0 to endTime */}
         <Circle
@@ -146,24 +163,75 @@ const DialSegment = ({ viewBoxSize, radius, circumference, startTime, endTime, s
           strokeWidth={radius}
           strokeDasharray={`${secondSectionWidth} ${circumference}`}
           fill='transparent'
-          stroke={strokeColor}
+          stroke={segmentColor}
+        />
+        <DialSegmentLabel
+          label={label}
+          labelColor={labelColor}
+          fontSize={fontSize}
+          startTime={startTime}
+          endTime={endTime}
+          cx={radius}
+          cy={-radius}
+          r={radius * 0.75}
         />
       </>
     );
   }
 };
 
-const createBlockerStyles = (time: number) => {
-  const angleRad = (time / 24) * 2 * Math.PI + Math.PI;
-  const angleDeg = angleRad * (180 / Math.PI);
-  const rotateZ = `${Math.floor(angleDeg)}deg`;
-  console.log(rotateZ);
-  return StyleSheet.create({
-    blocker: {
-      transformOrigin: 'left',
-      transform: [{ translateX: '100%' }, { rotateZ }],
-    },
-  });
+type DialSegmentLabelProps = {
+  label: string;
+  labelColor: string;
+  fontSize: number;
+  startTime: number;
+  endTime: number;
+  cx: number;
+  cy: number;
+  r: number;
+};
+
+const DialSegmentLabel = ({ label, labelColor, fontSize, startTime, endTime, cx, cy, r }: DialSegmentLabelProps) => {
+  let centerTime;
+
+  if (endTime > startTime) {
+    // Normal case: range does not cross midnight
+    centerTime = (startTime + endTime) / 2;
+  } else {
+    // Edge case: range crosses midnight
+    const totalTimeSpan = 24 - startTime + endTime; // Total span across midnight
+    const midpointTime = totalTimeSpan / 2;
+
+    if (midpointTime <= 24 - startTime) {
+      // Midpoint is in the first segment (startTime to midnight)
+      centerTime = startTime + midpointTime;
+    } else {
+      // Midpoint is in the second segment (midnight to endTime)
+      centerTime = midpointTime - (24 - startTime);
+    }
+  }
+
+  // Convert centerTime to an angle in radians
+  const angle = 2 * Math.PI * (centerTime / 24) - Math.PI / 2;
+
+  // Calculate Cartesian coordinates
+  const x = cx + r * Math.cos(angle);
+  const y = cy + r * Math.sin(angle) + fontSize / 4;
+
+  return (
+    <Text
+      x={x}
+      y={y}
+      textAnchor='middle'
+      fontSize={fontSize}
+      rotation={90}
+      fill={labelColor}
+      stroke='black'
+      strokeWidth={fontSize / 30}
+    >
+      {label}
+    </Text>
+  );
 };
 
 export default DialSegments;

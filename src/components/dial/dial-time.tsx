@@ -25,10 +25,7 @@ const DialTime = ({ time, radius }: DialTimeProps) => {
 
   return (
     <View className='absolute h-full w-full items-center justify-center'>
-      <Text
-        className='text-foreground bg-card shadow-card rounded-md p-0.5 font-mono text-sm font-bold shadow-sm'
-        style={styles.dial}
-      >
+      <Text className='font-mono text-sm font-bold text-foreground' style={styles.dial}>
         {renderTime}
       </Text>
     </View>

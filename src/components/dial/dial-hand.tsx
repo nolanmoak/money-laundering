@@ -39,7 +39,7 @@ const DialHand = () => {
   return (
     <Animated.View
       style={[styles.dialHand, animatedStyles]}
-      className='bg-foreground absolute left-1/2 top-0 z-10 h-1/2 w-[4px] rounded-sm border border-black'
+      className='absolute left-1/2 top-0 z-10 h-1/2 w-[4px] rounded-sm border border-black bg-foreground'
     ></Animated.View>
   );
 };

@@ -1,17 +1,15 @@
-import { View } from 'react-native';
+import { useWindowDimensions, View } from 'react-native';
 import Dial from '~/components/dial/dial';
-import { Text } from '~/components/ui/text';
+import Header from '~/components/header';
 
 export default function Index() {
+  const dimensions = useWindowDimensions();
+
   return (
     <View className='flex-1 items-center justify-center gap-8'>
-      <Text className='text-4xl font-bold'>Money Laundrying</Text>
-      <View className='grid flex-1 grid-cols-3'>
-        <View></View>
-        <View className='flex-shrink-0 flex-grow'>
-          <Dial radius={200} numberPadding={25} />
-        </View>
-        <Text className='text-center text-2xl'>Time until next</Text>
+      <Header />
+      <View className='flex-1'>
+        <Dial radius={Math.min((dimensions.width * 0.95) / 2, 250)} numberPadding={25} />
       </View>
     </View>
   );

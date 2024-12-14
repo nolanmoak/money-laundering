@@ -68,7 +68,7 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
-      <SafeAreaView className='bg-background flex-1'>
+      <SafeAreaView className='flex-1 bg-background'>
         <StatusBar style={isDarkColorScheme ? 'light' : 'dark'} />
         <Slot />
         <PortalHost />
