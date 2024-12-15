@@ -32,7 +32,7 @@ const DialSegments = ({ peakData }: DialSegmentsProps) => {
               endTime={endTime}
               circumference={circumference}
               radius={radius}
-              segmentColor='#f2dede'
+              segmentColor='#d91212'
             />
           );
         })}
@@ -49,7 +49,7 @@ const DialSegments = ({ peakData }: DialSegmentsProps) => {
               endTime={endTime}
               circumference={circumference}
               radius={radius}
-              segmentColor='#fcf8e3'
+              segmentColor='#fad365'
             />
           );
         })}
@@ -66,7 +66,7 @@ const DialSegments = ({ peakData }: DialSegmentsProps) => {
               endTime={endTime}
               circumference={circumference}
               radius={radius}
-              segmentColor='#dff0d8'
+              segmentColor='#13e539'
             />
           );
         })}

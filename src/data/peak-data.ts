@@ -1,8 +1,8 @@
-type PeakDataRange = [number, number];
-type PeakDataList = PeakDataRange[];
+export type PeakDataRange = [number, number];
+export type PeakDataList = PeakDataRange[];
 export type PeakDataEntry = { OFF: PeakDataList; ON: PeakDataList; MID: PeakDataList };
 
-type PeakData = Record<number, PeakDataEntry>;
+export type PeakData = Record<number, PeakDataEntry>;
 
 const PEAK_DATA_WINTER = {
   // Weekday
@@ -53,12 +53,9 @@ const PEAK_DATA_WINTER = {
     ON: [],
   },
   6: {
-    OFF: [[19, 7]],
-    MID: [[11, 17]],
-    ON: [
-      [7, 11],
-      [17, 19],
-    ],
+    OFF: [[0, 24]],
+    MID: [],
+    ON: [],
   },
 } satisfies PeakData;
 
@@ -131,5 +128,5 @@ export function getCurrentPeakData() {
   } else {
     data = PEAK_DATA_SUMMER;
   }
-  return day in data ? data[day] : null;
+  return data[day];
 }
