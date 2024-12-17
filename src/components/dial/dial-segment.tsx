@@ -220,6 +220,7 @@ const DialSegmentLabel = ({ label, labelColor, fontSize, startTime, endTime, cx,
 
   return (
     <Text
+      fontFamily='monospace'
       x={x}
       y={y}
       textAnchor='middle'
