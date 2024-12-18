@@ -1,6 +1,9 @@
+import { getNextDay } from '../lib/utils';
+
 export type PeakDataRange = [number, number];
 export type PeakDataList = PeakDataRange[];
-export type PeakDataEntry = { OFF: PeakDataList; ON: PeakDataList; MID: PeakDataList };
+export type PeakDataType = 'OFF' | 'ON' | 'MID';
+export type PeakDataEntry = Record<PeakDataType, PeakDataList>;
 
 export type PeakData = Record<number, PeakDataEntry>;
 
@@ -117,11 +120,9 @@ const PEAK_DATA_SUMMER = {
 const winterMonths = [10, 11, 0, 1, 2, 3];
 // const summerMonths = [4, 5, 6, 7, 8, 9];
 
-export function getCurrentPeakData() {
-  const date = new Date();
-  const month = date.getMonth();
-  const day = date.getDay();
-  const season: 'summer' | 'winter' = winterMonths.includes(month) ? 'winter' : 'summer';
+export type PeakSeason = 'winter' | 'summer';
+
+export function getPeakDataForDay(day: number, season: PeakSeason) {
   let data: PeakData;
   if (season === 'winter') {
     data = PEAK_DATA_WINTER;
@@ -129,4 +130,21 @@ export function getCurrentPeakData() {
     data = PEAK_DATA_SUMMER;
   }
   return data[day];
+}
+
+export function getCurrentPeakData() {
+  const date = new Date();
+  const month = date.getMonth();
+  const day = date.getDay();
+  const season: PeakSeason = winterMonths.includes(month) ? 'winter' : 'summer';
+  return getPeakDataForDay(day, season);
+}
+
+export function getNextDayPeakData() {
+  const date = new Date();
+  const month = date.getMonth();
+  const day = date.getDay();
+  const nextDay = getNextDay(day);
+  const season: PeakSeason = winterMonths.includes(month) ? 'winter' : 'summer';
+  return getPeakDataForDay(nextDay, season);
 }

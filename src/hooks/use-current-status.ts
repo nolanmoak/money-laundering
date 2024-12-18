@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { getCurrentPeakData, PeakDataList, PeakDataRange } from '../data/peak-data';
+import { getCurrentPeakData, getNextDayPeakData, PeakDataList, PeakDataRange, PeakDataType } from '../data/peak-data';
 
 export type CurrentStatus = 'on' | 'mid' | 'off';
 
@@ -20,18 +20,18 @@ export default function useCurrentStatus(): UseCurrentStatus {
   useEffect(() => {
     interval.current = setInterval(() => {
       const currentHour = new Date().getHours();
-      let nextHour: number | null = getNextPeakHourInPeakDataList(currentHour, peakData.ON);
+      let nextHour: number | null = getNextPeakHourInPeakDataList(currentHour, peakData.ON, 'ON');
       if (nextHour !== null) {
         setSecondsUntilNextPeak(getSecondsUntilHour(nextHour));
         setCurrentStatus('on');
         return;
       }
-      nextHour = getNextPeakHourInPeakDataList(currentHour, peakData.MID);
+      nextHour = getNextPeakHourInPeakDataList(currentHour, peakData.MID, 'MID');
       if (nextHour !== null) {
         setSecondsUntilNextPeak(getSecondsUntilHour(nextHour));
         setCurrentStatus('mid');
       }
-      nextHour = getNextPeakHourInPeakDataList(currentHour, peakData.OFF);
+      nextHour = getNextPeakHourInPeakDataList(currentHour, peakData.OFF, 'OFF');
       if (nextHour !== null) {
         setSecondsUntilNextPeak(getSecondsUntilHour(nextHour));
         setCurrentStatus('off');
@@ -58,15 +58,20 @@ export default function useCurrentStatus(): UseCurrentStatus {
 function getSecondsUntilHour(hour: number): number {
   const date = new Date();
   let currentHour = date.getHours();
-  const hoursLeft = Math.abs(hour - currentHour) - 1;
+  const hoursLeft = (currentHour > hour ? hour - (currentHour - 24) : hour - currentHour) - 1;
   const minutesLeft = 60 - date.getMinutes() - 1;
   const secondsLeft = 60 - date.getSeconds();
   return hoursLeft * 60 * 60 + minutesLeft * 60 + secondsLeft;
 }
 
-function getNextPeakHourInPeakDataList(currentHour: number, peakDataList: PeakDataList): number | null {
+function getNextPeakHourInPeakDataList(
+  currentHour: number,
+  peakDataList: PeakDataList,
+  type: PeakDataType,
+  isNextDay = false
+): number | null {
   for (let times of peakDataList) {
-    const nextHour = getNextPeakHourInRangeIfExists(currentHour, times);
+    const nextHour = getNextPeakHourInRangeIfExists(currentHour, times, type, isNextDay);
     if (nextHour !== null) {
       return nextHour;
     }
@@ -74,7 +79,12 @@ function getNextPeakHourInPeakDataList(currentHour: number, peakDataList: PeakDa
   return null;
 }
 
-function getNextPeakHourInRangeIfExists(currentHour: number, range: PeakDataRange): number | null {
+function getNextPeakHourInRangeIfExists(
+  currentHour: number,
+  range: PeakDataRange,
+  type: PeakDataType,
+  isNextDay = false
+): number | null {
   if (range[0] < range[1]) {
     if (currentHour >= range[0] && currentHour < range[1]) {
       return range[1];
@@ -84,7 +94,9 @@ function getNextPeakHourInRangeIfExists(currentHour: number, range: PeakDataRang
       return range[0];
     }
   } else {
-    if (currentHour >= range[0] || currentHour < range[1]) {
+    if (!isNextDay && currentHour >= range[0]) {
+      return getNextPeakHourInPeakDataList(currentHour, getNextDayPeakData()[type], type, true);
+    } else {
       return range[1];
     }
   }

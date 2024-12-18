@@ -16,3 +16,10 @@ export function getCurrentTimeDeg() {
   const timeRadians = hoursFraction * 2 * Math.PI;
   return timeRadians * (180 / Math.PI);
 }
+
+export function getNextDay(day: number) {
+  if (day === 6) {
+    return 0;
+  }
+  return day + 1;
+}
