@@ -1,38 +1,48 @@
 import { useEffect, useRef, useState } from 'react';
 import { getCurrentPeakData, getNextDayPeakData, PeakDataList, PeakDataRange, PeakDataType } from '../data/peak-data';
 
-export type CurrentStatus = 'on' | 'mid' | 'off';
-
 export type UseCurrentStatus = {
-  currentStatus: CurrentStatus;
+  currentStatus: PeakDataType;
+  nextStatus: PeakDataType;
   secondsUntilNextPeak: number;
 };
 
 export default function useCurrentStatus(): UseCurrentStatus {
   const peakData = getCurrentPeakData();
-  const [currentStatus, setCurrentStatus] = useState<CurrentStatus>('off');
+  const [currentStatus, setCurrentStatus] = useState<PeakDataType>('OFF');
+  const [nextStatus, setNextStatus] = useState<PeakDataType>('OFF');
   let interval = useRef<NodeJS.Timeout | null>(null);
   const [secondsUntilNextPeak, setSecondsUntilNextPeak] = useState(0);
 
   useEffect(() => {
+    function getPeakEndingHourAndStatus(hour: number): [number, PeakDataType] {
+      let peakEndingHour = getPeakEndingHourInPeakDataList(hour, peakData.ON, 'ON');
+      let status: PeakDataType = 'ON';
+
+      if (peakEndingHour === null) {
+        peakEndingHour = getPeakEndingHourInPeakDataList(hour, peakData.MID, 'MID');
+        status = 'MID';
+      }
+
+      if (peakEndingHour === null) {
+        peakEndingHour = getPeakEndingHourInPeakDataList(hour, peakData.OFF, 'OFF');
+        status = 'OFF';
+      }
+
+      if (peakEndingHour === null) {
+        throw new Error('Unable to find peak ending hour!');
+      }
+
+      return [peakEndingHour, status];
+    }
+
     interval.current = setInterval(() => {
       const currentHour = new Date().getHours();
-      let nextHour: number | null = getNextPeakHourInPeakDataList(currentHour, peakData.ON, 'ON');
-      if (nextHour !== null) {
-        setSecondsUntilNextPeak(getSecondsUntilHour(nextHour));
-        setCurrentStatus('on');
-        return;
-      }
-      nextHour = getNextPeakHourInPeakDataList(currentHour, peakData.MID, 'MID');
-      if (nextHour !== null) {
-        setSecondsUntilNextPeak(getSecondsUntilHour(nextHour));
-        setCurrentStatus('mid');
-      }
-      nextHour = getNextPeakHourInPeakDataList(currentHour, peakData.OFF, 'OFF');
-      if (nextHour !== null) {
-        setSecondsUntilNextPeak(getSecondsUntilHour(nextHour));
-        setCurrentStatus('off');
-      }
+      const [currentPeakEndingHour, status] = getPeakEndingHourAndStatus(currentHour);
+      setSecondsUntilNextPeak(getSecondsUntilHour(currentPeakEndingHour));
+      setCurrentStatus(status);
+      const [_, nextStatus] = getPeakEndingHourAndStatus(currentPeakEndingHour);
+      setNextStatus(nextStatus);
     }, 500);
 
     return () => {
@@ -49,6 +59,9 @@ export default function useCurrentStatus(): UseCurrentStatus {
     get secondsUntilNextPeak() {
       return secondsUntilNextPeak;
     },
+    get nextStatus() {
+      return nextStatus;
+    },
   };
 }
 
@@ -61,14 +74,14 @@ function getSecondsUntilHour(hour: number): number {
   return hoursLeft * 60 * 60 + minutesLeft * 60 + secondsLeft;
 }
 
-function getNextPeakHourInPeakDataList(
+function getPeakEndingHourInPeakDataList(
   currentHour: number,
   peakDataList: PeakDataList,
   type: PeakDataType,
   isNextDay = false
 ): number | null {
   for (let times of peakDataList) {
-    const nextHour = getNextPeakHourInRangeIfExists(currentHour, times, type, isNextDay);
+    const nextHour = getPeakEndingHourInRangeIfExists(currentHour, times, type, isNextDay);
     if (nextHour !== null) {
       return nextHour;
     }
@@ -76,7 +89,7 @@ function getNextPeakHourInPeakDataList(
   return null;
 }
 
-function getNextPeakHourInRangeIfExists(
+function getPeakEndingHourInRangeIfExists(
   currentHour: number,
   range: PeakDataRange,
   type: PeakDataType,
@@ -92,7 +105,7 @@ function getNextPeakHourInRangeIfExists(
     }
   } else {
     if (!isNextDay && currentHour >= range[0]) {
-      return getNextPeakHourInPeakDataList(currentHour, getNextDayPeakData()[type], type, true);
+      return getPeakEndingHourInPeakDataList(currentHour, getNextDayPeakData()[type], type, true);
     } else {
       return range[1];
     }
