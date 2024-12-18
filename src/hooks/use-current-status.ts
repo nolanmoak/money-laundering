@@ -14,9 +14,6 @@ export default function useCurrentStatus(): UseCurrentStatus {
   let interval = useRef<NodeJS.Timeout | null>(null);
   const [secondsUntilNextPeak, setSecondsUntilNextPeak] = useState(0);
 
-  if (peakData.ON.length === 1 && peakData.ON[1][1] - peakData.ON[1][0] === 24) {
-  }
-
   useEffect(() => {
     interval.current = setInterval(() => {
       const currentHour = new Date().getHours();
