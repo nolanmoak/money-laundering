@@ -10,7 +10,7 @@ export default function Index() {
     <View className='flex-1 items-center justify-center gap-8'>
       <Header />
       <View className='flex-1'>
-        <Dial radius={Math.min((dimensions.width * 0.95) / 2, 400)} numberPadding={25} />
+        <Dial radius={Math.min((Math.min(dimensions.width, dimensions.height) * 0.95) / 2, 400)} numberPadding={25} />
       </View>
       <View className='h-32'>
         <CurrentStatus />
