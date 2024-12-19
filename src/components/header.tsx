@@ -9,7 +9,7 @@ const Header = () => {
   return (
     <View role='banner' className='flex w-full flex-row items-center justify-between p-4'>
       <Image source={logo} contentFit='cover' contentPosition='center' className='h-28 w-28 rounded-xl' />
-      <Text className='text-4xl font-bold'>Money Laundrying</Text>
+      <Text className='native:hidden hidden text-4xl font-bold sm:block'>Money Laundrying</Text>
       <ThemeToggle />
     </View>
   );

@@ -18,11 +18,12 @@ const CurrentStatus = () => {
 
   return (
     <View>
-      <Text className={cn('text-4xl', colorClassName)}>
-        Current Status: <Text className={cn('text-4xl font-bold', colorClassName)}>{currentStatus} PEAK</Text>
+      <Text className={cn('text-2xl sm:text-4xl', colorClassName)}>
+        Current Status:{' '}
+        <Text className={cn('text-2xl font-bold sm:text-4xl', colorClassName)}>{currentStatus} PEAK</Text>
       </Text>
-      <Text className='text-4xl'>
-        Time until <Text className={cn('text-4xl', nextStatusColorClassName)}>{nextStatus} PEAK</Text>:{' '}
+      <Text className='text-2xl sm:text-4xl'>
+        Time until <Text className={cn('text-2xl sm:text-4xl', nextStatusColorClassName)}>{nextStatus} PEAK</Text>:{' '}
         <TimeDisplay seconds={secondsUntilNextPeak} colorClassName={colorClassName} />
       </Text>
     </View>

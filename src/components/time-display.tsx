@@ -13,7 +13,7 @@ const TimeDisplay = ({ seconds, colorClassName }: TimeDisplayProps) => {
   const secondsDisplay = (seconds % 3600) % 60;
 
   return (
-    <Text className={cn('font-mono text-4xl font-bold', colorClassName)}>
+    <Text className={cn('font-mono text-2xl font-bold sm:text-4xl', colorClassName)}>
       {hours.toString().padStart(2, '0')}:{minutes.toString().padStart(2, '0')}:
       {secondsDisplay.toString().padStart(2, '0')}
     </Text>
