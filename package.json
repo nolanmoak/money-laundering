@@ -33,6 +33,7 @@
     "expo-haptics": "~14.0.0",
     "expo-image": "~2.0.3",
     "expo-linking": "~7.0.3",
+    "expo-location": "^18.0.4",
     "expo-navigation-bar": "^4.0.6",
     "expo-router": "4.0.14",
     "expo-splash-screen": "~0.29.18",
@@ -74,5 +75,6 @@
     "react-test-renderer": "18.3.1",
     "typescript": "^5.7.2"
   },
-  "private": true
+  "private": true,
+  "packageManager": "pnpm@9.15.1+sha256.9e534e70afef06374f6126b44bda5760947135ce16a30aef1010e965fb7e3e3e"
 }
